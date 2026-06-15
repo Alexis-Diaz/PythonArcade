@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adivina el Número</title>
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<a href="/">⬅ Volver al menú</a>
+
+<h1>🎯 Adivina el Número</h1>
+
+<select id="dificultad">
+
+<option value="facil">
+Fácil (1-50)
+</option>
+
+<option value="normal">
+Normal (1-100)
+</option>
+
+<option value="dificil">
+Difícil (1-500)
+</option>
+
+</select>
+
+<button onclick="iniciarJuego()">
+Nuevo Juego
+</button>
+
+<br><br>
+
+<input
+type="number"
+id="numero">
+
+<button onclick="intentar()">
+Intentar
+</button>
+
+<h2 id="mensaje"></h2>
+
+<script>
+
+function iniciarJuego(){
+
+fetch('/nuevo_juego',{
+
+method:'POST',
+
+headers:{
+'Content-Type':'application/json'
+},
+
+body:JSON.stringify({
+
+dificultad:
+document.getElementById(
+'dificultad'
+).value
+
+})
+
+})
+
+.then(res=>res.json())
+
+.then(data=>{
+
+document.getElementById(
+'mensaje'
+).innerHTML =
+
+`Número generado entre
+1 y ${data.maximo}`;
+
+});
+
+}
+
+function intentar(){
+
+let numero =
+
+document.getElementById(
+'numero'
+).value;
+
+fetch('/intentar',{
+
+method:'POST',
+
+headers:{
+'Content-Type':'application/json'
+},
+
+body:JSON.stringify({
+numero:numero
+})
+
+})
+
+.then(res=>res.json())
+
+.then(data=>{
+
+if(data.estado=="gano"){
+
+document.getElementById(
+'mensaje'
+).innerHTML =
+
+`🏆 Ganaste en
+${data.intentos}
+intentos`;
+
+}
+
+else if(data.estado=="mayor"){
+
+document.getElementById(
+'mensaje'
+).innerHTML =
+
+"⬆️ El número es mayor";
+
+}
+
+else{
+
+document.getElementById(
+'mensaje'
+).innerHTML =
+
+"⬇️ El número es menor";
+
+}
+
+});
+
+}
+
+</script>
+
+</body>
+
+</html>

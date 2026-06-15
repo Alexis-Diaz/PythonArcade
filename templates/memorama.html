@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memorama</title>
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<a href="/">⬅ Volver al menú</a>
+
+<h1>🧠 Memorama</h1>
+
+<h2 id="movimientos">
+Movimientos: 0
+</h2>
+
+<h3 id="parejas">
+Parejas encontradas: 0 / 6
+</h3>
+
+
+<button onclick="nuevoJuego()">
+🔄 Nuevo Juego
+</button>
+
+<div class="tablero" id="tablero"></div>
+
+<script>
+
+let primera = null;
+let segunda = null;
+let bloqueado = false;
+
+let movimientos = 0;
+let parejas = 0;
+
+const tablero =
+document.getElementById(
+"tablero"
+);
+
+function crearTablero(){
+
+    tablero.innerHTML = "";
+
+    primera = null;
+    segunda = null;
+    bloqueado = false;
+
+    movimientos = 0;
+    parejas = 0;
+
+    document.getElementById(
+    "movimientos"
+    ).innerHTML =
+    "Movimientos: 0";
+
+    document.getElementById(
+    "parejas"
+    ).innerHTML =
+    "Parejas encontradas: 0 / 6";
+
+    let emojis = [
+
+    "🐶","🐶",
+    "🐱","🐱",
+    "🐵","🐵",
+    "🦊","🦊",
+    "🐸","🐸",
+    "🐼","🐼"
+
+    ];
+
+    emojis.sort(
+    () => Math.random() - 0.5
+    );
+
+    emojis.forEach((emoji,index)=>{
+
+        let carta =
+        document.createElement("div");
+
+        carta.classList.add(
+        "carta"
+        );
+
+        carta.dataset.valor =
+        emoji;
+
+        carta.dataset.index =
+        index;
+
+        carta.innerHTML =
+        "❓";
+
+        carta.addEventListener(
+        "click",
+        voltear
+        );
+
+        tablero.appendChild(
+        carta
+        );
+
+    });
+
+}
+
+function voltear(){
+
+    if(bloqueado) return;
+
+    if(this === primera) return;
+
+    if(this.innerHTML !== "❓") return;
+
+    this.innerHTML =
+    this.dataset.valor;
+
+    if(!primera){
+
+        primera = this;
+        return;
+
+    }
+
+    segunda = this;
+
+    movimientos++;
+
+    document.getElementById(
+    "movimientos"
+    ).innerHTML =
+    "Movimientos: " +
+    movimientos;
+
+ if(
+primera.dataset.valor ===
+segunda.dataset.valor
+){
+
+    parejas++;
+
+    document.getElementById(
+    "parejas"
+    ).innerHTML =
+    `Parejas encontradas: ${parejas} / 6`;
+
+    primera = null;
+    segunda = null;
+
+    if(parejas === 6){
+
+        setTimeout(()=>{
+
+            let respuesta = confirm(
+            "🏆 ¡Ganaste!\n\n¿Deseas jugar otra vez?"
+            );
+
+            if(respuesta){
+
+                crearTablero();
+
+            }
+
+        },300);
+
+    }
+
+}
+    else{
+
+        bloqueado = true;
+
+        setTimeout(()=>{
+
+            primera.innerHTML =
+            "❓";
+
+            segunda.innerHTML =
+            "❓";
+
+            primera = null;
+            segunda = null;
+
+            bloqueado = false;
+
+        },1000);
+
+    }
+
+}
+
+function nuevoJuego(){
+
+    crearTablero();
+
+}
+
+crearTablero();
+
+</script>
+</body>
+
+</html>

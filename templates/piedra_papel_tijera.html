@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Piedra Papel Tijera</title>
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<a href="/">⬅ Volver al menú</a>
+
+<h1>✂️ Piedra Papel Tijera</h1>
+
+<select id="rondas">
+
+<option value="3">3 rondas</option>
+<option value="5">5 rondas</option>
+<option value="7">7 rondas</option>
+
+</select>
+
+<h2>
+
+Jugador:
+<span id="pj">0</span>
+
+|
+
+Máquina:
+<span id="pm">0</span>
+
+</h2>
+
+<div class="opciones">
+
+<button onclick="jugar('Piedra')">
+👊 Piedra
+</button>
+
+<button onclick="jugar('Papel')">
+📄 Papel
+</button>
+
+<button onclick="jugar('Tijera')">
+✂️ Tijera
+</button>
+
+</div>
+
+<h2 id="resultado">
+Elige una opción
+</h2>
+
+<script>
+
+let jugador = 0;
+let maquina = 0;
+
+function jugar(eleccion){
+
+fetch('/jugar',{
+
+method:'POST',
+
+headers:{
+'Content-Type':'application/json'
+},
+
+body:JSON.stringify({
+jugador:eleccion
+})
+
+})
+
+.then(res=>res.json())
+
+.then(data=>{
+
+let mensaje="";
+
+if(data.resultado==0){
+
+mensaje="🤝 Empate";
+
+}
+else if(data.resultado==1){
+
+mensaje="✅ Ganaste";
+
+jugador++;
+
+}
+else{
+
+mensaje="❌ Perdió el jugador";
+
+maquina++;
+
+}
+
+document.getElementById("pj")
+.innerText = jugador;
+
+document.getElementById("pm")
+.innerText = maquina;
+
+document.getElementById("resultado")
+.innerHTML =
+
+`
+Tú: ${data.jugador}<br>
+Máquina: ${data.maquina}<br><br>
+${mensaje}
+`;
+
+verificar();
+});
+
+}
+
+function verificar(){
+
+let rondas = parseInt(
+document.getElementById(
+"rondas"
+).value
+);
+
+let objetivo = Math.ceil(
+rondas/2
+);
+
+if(jugador >= objetivo){
+
+alert("🏆 Ganaste el torneo");
+
+reiniciar();
+
+}
+
+if(maquina >= objetivo){
+
+alert("🤖 La máquina gana");
+
+reiniciar();
+
+}
+
+}
+
+function reiniciar(){
+
+jugador = 0;
+maquina = 0;
+
+document.getElementById("pj")
+.innerText = 0;
+
+document.getElementById("pm")
+.innerText = 0;
+
+}
+
+</script>
+
+</body>
+
+</html>
